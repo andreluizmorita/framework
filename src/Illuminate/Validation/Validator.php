@@ -111,12 +111,13 @@ class Validator implements MessageProviderInterface {
 	 * @param  array  $messages
 	 * @return void
 	 */
-	public function __construct(TranslatorInterface $translator, $data, $rules, $messages = array())
+	public function __construct(TranslatorInterface $translator, $data, $rules, $messages = array(), $customAttributes = array())
 	{
 		$this->translator = $translator;
 		$this->customMessages = $messages;
 		$this->data = $this->parseData($data);
 		$this->rules = $this->explodeRules($rules);
+		$this->customAttributes = $customAttributes;
 	}
 
 	/**
@@ -1031,14 +1032,7 @@ class Validator implements MessageProviderInterface {
 	 */
 	protected function validateBefore($attribute, $value, $parameters)
 	{
-		if ( ! ($date = strtotime($parameters[0])))
-		{
-			return strtotime($value) < strtotime($this->getValue($parameters[0]));
-		}
-		else
-		{
-			return strtotime($value) < $date;
-		}
+		return strtotime($value) < strtotime($parameters[0]);
 	}
 
 	/**
@@ -1051,14 +1045,7 @@ class Validator implements MessageProviderInterface {
 	 */
 	protected function validateAfter($attribute, $value, $parameters)
 	{
-		if ( ! ($date = strtotime($parameters[0])))
-		{
-			return strtotime($value) > strtotime($this->getValue($parameters[0]));
-		}
-		else
-		{
-			return strtotime($value) > $date;
-		}
+		return strtotime($value) > strtotime($parameters[0]);
 	}
 
 	/**
@@ -1792,8 +1779,6 @@ class Validator implements MessageProviderInterface {
 	 */
 	public function messages()
 	{
-		if ( ! $this->messages) $this->passes();
-		
 		return $this->messages;
 	}
 
@@ -1804,8 +1789,6 @@ class Validator implements MessageProviderInterface {
 	 */
 	public function errors()
 	{
-		if ( ! $this->messages) $this->passes();
-		
 		return $this->messages;
 	}
 
